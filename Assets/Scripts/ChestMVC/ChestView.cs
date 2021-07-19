@@ -1,4 +1,4 @@
-﻿using System;
+﻿
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,20 +21,20 @@ public class ChestView : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+  /*  void Update()
     {
         if (chestController.startTimer)
         {
            chestController.StartUnlockingChest();
         }
     }
-
+*/
     public void DisplayChestData()
     {
-        TimerText.text = "Timer:" + chestController.TimeToUnlock.ToString();
-        TypeText.text = "Type:" + chestController.Type;
-        GemsText.text = "Gems:" + chestController.Gems.ToString();
-        CoinsText.text = "Coins:" + chestController.Coins.ToString();
+        TimerText.text = "Timer:" + ConvertTimerToReadable(chestController.ChestModel.TimeToUnlock);
+        TypeText.text = "Type:" + chestController.ChestModel.Type;
+        GemsText.text = "Gems:" + chestController.ChestModel.Gems.ToString();
+        CoinsText.text = "Coins:" + chestController.ChestModel.Coins.ToString();
         StatusText.text = "Status:" + chestController.Status;
         UnlockGemsText.text = "GemsToUnlock:" + chestController.UnlockGems.ToString();
         gameObject.GetComponent<Image>().sprite = currentSprite;
@@ -47,7 +47,26 @@ public class ChestView : MonoBehaviour
 
     public void DisplayTimerAndUnlockGems(int timeLeft,int UnlockGems)
     {
-        TimerText.text = "Timer:" + timeLeft.ToString();
+        TimerText.text = "Timer:" + ConvertTimerToReadable(timeLeft);
         UnlockGemsText.text = "GemsToUnlock:" + UnlockGems.ToString();
+    }
+
+    public string ConvertTimerToReadable(int timeInSec)
+    {
+        //Debug.Log("TimeInSec=" + timeInSec);
+        string Time=timeInSec.ToString();
+        if (timeInSec >= 60)
+        {
+            int min = timeInSec / 60;
+            if (min >= 60)
+                min = min % 60;
+            int sec = timeInSec % 60;
+            int hour = timeInSec / 3600;
+            if(hour>0)
+                Time =hour.ToString()+ "hr" + min.ToString() + "min" + sec.ToString();
+            else
+                Time = min.ToString() + "min" + sec.ToString();
+        }
+        return Time+"sec";
     }
 }

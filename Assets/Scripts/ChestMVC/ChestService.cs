@@ -95,8 +95,10 @@ public class ChestService : MonoSingleton<ChestService>
     public void UnlockNextChest(ChestView unlockedChestView)
     {
         unlockingQueue.Remove(unlockedChestView);
-        if(unlockingQueue.Count>0)
+        if (unlockingQueue.Count > 0)
             unlockingQueue[0].chestController.StartTimer();
+        else
+            timerStarted = false;
         
     }
 
