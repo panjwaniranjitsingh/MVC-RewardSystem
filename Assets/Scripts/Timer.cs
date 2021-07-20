@@ -54,6 +54,6 @@ public class Timer : MonoBehaviour
         TimeSpan subTimer = nowSpan.Subtract(startSpan).Duration();
 
         //Return the time difference (the return value is the number of seconds of the difference)
-        return subTimer.Seconds;
+        return (int)subTimer.TotalSeconds;
     }
 }
