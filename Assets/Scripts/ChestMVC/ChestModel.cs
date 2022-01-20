@@ -10,9 +10,13 @@ public class ChestModel
         TimeToUnlock = chestSO.TimeToUnlockInSeconds;
     }
 
-    public string Type { get; }
-    public int Coins { get;  }
-    public int Gems { get;  }
-    public int TimeToUnlock { get; }
+    public string Type { get; private set; }
+    public int Coins { get; private set; }
+    public int Gems { get; private set; }
+    public int TimeToUnlock { get; private set; }
 
+    public void SetType(string type) { Type = type; }
+    public void SetCoins(int coins) { Coins = coins; }
+    public void SetGems(int gems) { Gems = gems; }
+    public void SetTimeToUnlock(int time) { TimeToUnlock = time; }
 }

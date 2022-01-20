@@ -1,21 +1,16 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
-[Serializable]
 public class ChestController 
 {
-    public string Type;
-    public int Coins;
-    public int Gems;
-    public int TimeToUnlock;
     public string Status;
     public int UnlockGems;
-    DateTime startTimeStamp;
+    //DateTime startTimeStamp;
     public bool addedToQueue;
     public bool empty;
     public bool locked;
     private Sprite emptySprite;
-    public bool startTimer;
+    Timer timer;
+    //public bool startTimer;
 
     public ChestController(ChestModel chestModel,ChestView chestPrefab,Sprite chestSprite)
     {
@@ -24,6 +19,7 @@ public class ChestController
         ChestView.chestController = this;
         emptySprite=chestSprite;
         Debug.Log("ChestView Created", ChestView);
+        timer = ChestView.GetComponent<Timer>();
     }
 
     public ChestModel ChestModel { get; }
@@ -31,14 +27,14 @@ public class ChestController
 
     internal void MakeChestEmpty()
     {
-        Type= "Empty";
-        Coins = 0;
-        Gems = 0;
+        ChestModel.SetType("Empty");
+        ChestModel.SetCoins(0);
+        ChestModel.SetGems(0);
+        ChestModel.SetTimeToUnlock(0);
         empty = true;
         Status = "Empty";
         addedToQueue = false;
         UnlockGems = 0;
-        addedToQueue = false;
         ChestView.currentSprite = emptySprite;
         ChestView.DisplayChestData();
     }
@@ -47,17 +43,17 @@ public class ChestController
     {
         locked = true;
         empty = false;
-        Type = chestSO.Type;
-        Coins = UnityEngine.Random.Range(chestSO.minCoins, chestSO.maxCoins);
-        Gems = UnityEngine.Random.Range(chestSO.minGems, chestSO.maxGems);
-        TimeToUnlock = chestSO.TimeToUnlockInSeconds;
+        ChestModel.SetType(chestSO.Type);
+        ChestModel.SetCoins(UnityEngine.Random.Range(chestSO.minCoins, chestSO.maxCoins));
+        ChestModel.SetGems(UnityEngine.Random.Range(chestSO.minGems, chestSO.maxGems));
+        ChestModel.SetTimeToUnlock(chestSO.TimeToUnlockInSeconds);
         Status = "Locked";
-        UnlockGems = CountGemsToUnlock(TimeToUnlock);
+        UnlockGems = CountGemsToUnlock(ChestModel.TimeToUnlock);
         ChestView.currentSprite = chestSprite;
         ChestView.DisplayChestData();
     }
 
-    private int CountGemsToUnlock(int timeToUnlock)
+    public int CountGemsToUnlock(int timeToUnlock)
     {
         int noOfGems = 0;
         int unlockTimeInMin = timeToUnlock / 60;
@@ -76,13 +72,14 @@ public class ChestController
         }
     }
 
-    private void ChestUnlocked()
+    public void ChestUnlocked()
     {
         Debug.Log("Chest Unlocked");
-        startTimer = false;
+        //startTimer = false;
+        timer.enabled = false;
         locked = false;
         Status = "Unlocked";
-        TimeToUnlock = 0;
+        ChestModel.SetTimeToUnlock(0);
         UnlockGems = 0;
         ChestView.DisplayChestData();
         ChestService.GetInstance().UnlockNextChest(ChestView);
@@ -104,8 +101,8 @@ public class ChestController
         }
         if (!locked)
         {
-            Player.GetInstance().AddToPlayer(Coins, Gems);
-            message = "Added " + Coins + " coins and " + Gems + " gems";
+            Player.GetInstance().AddToPlayer(ChestModel.Coins,ChestModel.Gems);
+            message = "Added " + ChestModel.Coins + " coins and " + ChestModel.Gems + " gems";
             ChestService.GetInstance().DisplayMessageOnPopUp(message);
             MakeChestEmpty();
         }
@@ -116,7 +113,13 @@ public class ChestController
         }
     }
 
-    internal void StartTimer()
+    public void StartTimer()
+    {
+        //Activate Timer Script
+        timer.SetController(this);
+        timer.enabled = true;
+    }
+   /* public void StartTimer()
     {
         startTimeStamp = DateTime.Now;
         Debug.Log("StartTimeStamp=" + startTimeStamp);
@@ -129,10 +132,10 @@ public class ChestController
         DateTime curtimer = DateTime.Now;
         int timer = GetSubSeconds(startTimeStamp, curtimer);
         //Debug.Log(timer);
-        int timeLeft = TimeToUnlock - timer;
+        int timeLeft = ChestModel.TimeToUnlock - timer;
         UnlockGems = CountGemsToUnlock(timeLeft);
         ChestView.DisplayTimerAndUnlockGems(timeLeft, UnlockGems);
-        if (timer >= TimeToUnlock)
+        if (timer >= ChestModel.TimeToUnlock)
         {
             Debug.Log("Chest Unlocked at " + curtimer);
             ChestUnlocked();
@@ -149,5 +152,5 @@ public class ChestController
 
         //Return the time difference (the return value is the number of seconds of the difference)
         return subTimer.Seconds;
-    }
+    }*/
 }
